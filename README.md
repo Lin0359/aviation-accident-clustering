@@ -1,48 +1,36 @@
 # Aviation Accident Clustering
 
-A coursework project exploring patterns in historical aviation accident records. The repository preserves two related analysis tracks:
+A coursework project exploring patterns in historical aviation accidents through two exploratory clustering workflows. The analyses are useful for practicing data preparation, feature engineering, clustering, and interpretation; they are not validated aviation-safety models.
 
-1. **Numeric profile clustering** — K-means on year, occupants aboard, fatalities, fatality rate, and ground fatalities.
-2. **Keyword-derived profile clustering** — rule-based indicators extracted from available text fields, followed by K-means.
+## Analyses
 
-These are exploratory analyses, not validated aviation-safety models. The cluster labels are algorithmic groupings and should not be interpreted as causal categories or risk predictions.
+1. **Numeric accident profiles** — K-means using year, occupants aboard, fatalities, fatality rate, and ground fatalities.
+2. **Text-derived profiles** — rule-based indicators extracted from accident text fields, followed by clustering.
+
+Cluster labels are algorithmic groupings. They do not establish causal accident types, predict future risk, or measure operational safety.
+
+## Data source and version notes
+
+The dataset is associated with Kaggle's [Airplane Crashes Since 1908](https://www.kaggle.com/datasets/saurograndi/airplane-crashes-since-1908), titled *Airplane Crashes and Fatalities Since 1908*. The dataset page describes a historical collection that originated from a Socrata-hosted source. Check the provider page for the terms that apply to each copy before redistribution.
+
+The CSVs in this repository are coursework-era snapshots. A separately downloaded copy from the Kaggle page contains 5,268 records and uses the `Type` field; the repository's numeric analysis expects `AC Type` in its CSV. The copies therefore differ in schema, and their record-level equivalence has not been established. Reconcile columns, rows, and dates before substituting a different download.
 
 ## Repository contents
 
 | File | Purpose |
 | --- | --- |
-| Assignment4.py | Numeric-feature clustering, cluster summaries, and interactive plots |
-| final_explore.py | Keyword indicator construction and clustering summary |
-| Airplane_Crashes_and_Fatalities_Since_1908_20190820105639.csv | Input for numeric-feature analysis |
-| airplane_crashes.csv | Input for keyword-derived analysis |
-
-The CSV files are similar in size and subject, but their equivalence and exact provenance have not been verified. They are retained separately because each script expects a different input file.
-
-## Run locally
-
-Use Python 3.10 or later. Install dependencies:
-
-    python -m pip install -r requirements.txt
-
-Run each analysis from the repository root:
-
-    python Assignment4.py
-    python final_explore.py
-
-The first script opens charts interactively and writes cluster_summary.csv, cluster_examples.csv, and clustered_data.csv to the current directory. The second writes cluster_report_k4.csv.
+| `Assignment4.py` | Numeric-feature clustering, cluster summaries, and interactive plots |
+| `final_explore.py` | Text-derived indicator construction and clustering exploration |
+| `Airplane_Crashes_and_Fatalities_Since_1908_20190820105639.csv` | Historical input used by the numeric-feature analysis |
+| `airplane_crashes.csv` | Additional coursework data file used by the text exploration |
 
 ## Interpretation and limitations
 
-- K-means groups records by selected features; it does not discover verified accident causes or estimate future risk.
-- In Assignment4.py, fatalities and fatality rate both encode severity, so severity is represented more than once. Missing ground-fatality values are filled with zero, conflating unknown with none. Rates above 1 are clipped rather than investigated.
-- In final_explore.py, keyword matches are simple substring rules. They can miss wording, match unrelated fields, overlap, and do not measure semantic text similarity. Missing or undefined fatality rates become zero, and the 0.8 “high fatality” cutoff is hand-set.
-- The selected cluster counts (3 and 4) are fixed in the scripts. The first script prints inertia and silhouette scores for several k values, but does not use those results to select k.
-- Results depend on data versions, preprocessing, and feature choices. Review the source and data before using or citing any output.
+- K-means assigns records based on the selected features and scaling choices; results can change when either changes.
+- Accident narratives may be incomplete or inconsistent. Rule-based text indicators reflect the chosen keywords and can miss context or encode overlapping categories.
+- Fatalities and aboard counts can be missing or recorded inconsistently. Any analysis should report how missing values and derived rates are handled.
+- This dataset is observational and historical. The analyses do not support causal claims or operational recommendations.
 
-## Data and attribution
+## Reproducing the coursework
 
-The CSV files are included as they were found in the original coursework repository. Their source, license, and version have not been independently confirmed here. Check the dataset provider's terms and document the source before redistributing the data or treating the outputs as reproducible research.
-
-## Related writing
-
-The analyses are related to the author's aviation-accident coursework/report work. The keyword-based script here should not be described as a text-similarity or “twin disasters” system without a separate implementation that actually computes and evaluates text similarity.
+The repository preserves the original school-project scripts and data snapshots. The scripts expect the historical filenames and column layouts described above, so a newly downloaded dataset may need a documented schema-mapping and validation step before it can be used. Review the input paths and column names in each script before running it.
