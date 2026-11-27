@@ -1,36 +1,50 @@
 # Aviation Accident Clustering
 
-A coursework project exploring patterns in historical aviation accidents through two exploratory clustering workflows. The analyses are useful for practicing data preparation, feature engineering, clustering, and interpretation; they are not validated aviation-safety models.
+A coursework project exploring historical aviation accident records with descriptive clustering. It preserves the original class analyses and adds a reproducible workflow for the Kaggle dataset copy used here.
+
+## Preview
+
+![Recorded accidents by decade and exploratory K-means groups](aviation_accident_patterns.png)
+
+This point-in-time Kaggle download had 5,268 source rows. Of these, 5,244 passed the analysis filters for a valid date, positive aboard count, and nonnegative fatality count. The silhouette score is a clustering diagnostic, not evidence that the groups are meaningful accident types.
 
 ## Analyses
 
-1. **Numeric accident profiles** — K-means using year, occupants aboard, fatalities, fatality rate, and ground fatalities.
-2. **Text-derived profiles** — rule-based indicators extracted from accident text fields, followed by clustering.
+- `Assignment4.py`: original numeric-feature K-means coursework script. It expects the historical CSV and an `AC Type` column.
+- `final_explore.py`: original rule-based text feature and K-means exploration. Keyword matches are not verified causes.
+- `aviation_analysis.py`: command-line workflow for the Kaggle format. It uses year and log-transformed aboard/fatality counts, standardizes the features, fits K-means, and exports a cluster summary and charts.
 
-Cluster labels are algorithmic groupings. They do not establish causal accident types, predict future risk, or measure operational safety.
+## Data source and versions
 
-## Data source and version notes
+The source associated with this project is Kaggle's [Airplane Crashes Since 1908](https://www.kaggle.com/datasets/saurograndi/airplane-crashes-since-1908), titled *Airplane Crashes and Fatalities Since 1908*. The Kaggle page describes a historical collection that originated from a Socrata-hosted source. Review the provider's current terms before redistributing any copy.
 
-The dataset is associated with Kaggle's [Airplane Crashes Since 1908](https://www.kaggle.com/datasets/saurograndi/airplane-crashes-since-1908), titled *Airplane Crashes and Fatalities Since 1908*. The dataset page describes a historical collection that originated from a Socrata-hosted source. Check the provider page for the terms that apply to each copy before redistribution.
+The repository's coursework CSVs are older snapshots. The downloaded Kaggle copy has a `Type` column, while the original numeric script expects `AC Type`. Their schemas differ and record-level equivalence has not been established. The new `aviation_analysis.py` workflow only needs `Date`, `Aboard`, and `Fatalities`, so it can read the Kaggle copy without renaming `Type`.
 
-The CSVs in this repository are coursework-era snapshots. A separately downloaded copy from the Kaggle page contains 5,268 records and uses the `Type` field; the repository's numeric analysis expects `AC Type` in its CSV. The copies therefore differ in schema, and their record-level equivalence has not been established. Reconcile columns, rows, and dates before substituting a different download.
+## Reproduce the Kaggle workflow
 
-## Repository contents
+Install Python 3.10 or newer. Create and activate an environment, then install dependencies:
 
-| File | Purpose |
-| --- | --- |
-| `Assignment4.py` | Numeric-feature clustering, cluster summaries, and interactive plots |
-| `final_explore.py` | Text-derived indicator construction and clustering exploration |
-| `Airplane_Crashes_and_Fatalities_Since_1908_20190820105639.csv` | Historical input used by the numeric-feature analysis |
-| `airplane_crashes.csv` | Additional coursework data file used by the text exploration |
+~~~bash
+python -m venv .venv
+# macOS / Linux
+source .venv/bin/activate
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+~~~
 
-## Interpretation and limitations
+Download the CSV from the Kaggle page and run:
 
-- K-means assigns records based on the selected features and scaling choices; results can change when either changes.
-- Accident narratives may be incomplete or inconsistent. Rule-based text indicators reflect the chosen keywords and can miss context or encode overlapping categories.
-- Fatalities and aboard counts can be missing or recorded inconsistently. Any analysis should report how missing values and derived rates are handled.
-- This dataset is observational and historical. The analyses do not support causal claims or operational recommendations.
+~~~bash
+python aviation_analysis.py --input path/to/Airplane_Crashes_and_Fatalities_Since_1908.csv --output-dir outputs --clusters 3
+~~~
 
-## Reproducing the coursework
+The script also accepts the downloaded ZIP when it contains one CSV. It writes `cluster_summary.csv`, `aviation_accident_patterns.png`, and `aviation_accident_patterns.svg` into the output directory. The root-level PNG above is the preview generated from the supplied snapshot.
 
-The repository preserves the original school-project scripts and data snapshots. The scripts expect the historical filenames and column layouts described above, so a newly downloaded dataset may need a documented schema-mapping and validation step before it can be used. Review the input paths and column names in each script before running it.
+## Limitations
+
+- The clusters depend on selected features, log transforms, scaling, and the chosen cluster count. Cluster numbers are labels, not rankings.
+- Accident counts over time reflect dataset coverage and reporting as well as events; they are not exposure-adjusted accident rates.
+- Missing or inconsistent records affect which rows are included. The script drops rows missing date, aboard, or fatalities and excludes nonpositive aboard counts and negative fatalities.
+- Narrative keyword categories can overlap, miss context, and encode assumptions. They should not be interpreted as ground-truth causes.
+- These exploratory analyses do not establish causation, predict future risk, or support operational safety decisions.
